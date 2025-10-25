@@ -1,65 +1,114 @@
-import Image from "next/image";
+"use client";
+import { useState } from "react";
+import axios from "axios";
+import { Loader2 } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 export default function Home() {
+  const [showInput, setShowInput] = useState(false);
+  const [reply, setReply] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [prompt, setPrompt] = useState("");
+
+  const handleGenerate = async () => {
+    if (!prompt.trim()) return;
+    setLoading(true);
+    setReply("");
+
+    try {
+      const res = await axios.post("/api/generate", {
+        prompt,
+      });
+      setReply(res.data.reply || "No recipe generated.");
+    } catch (err: any) {
+      console.error(err);
+      setReply("Error generating recipe.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="flex min-h-screen items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex min-h-screen w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <>
+      <div className="flex flex-col items-center justify-baseline px-4 text-center mt-10">
+        <main className="p-20 rounded-2xl mx-4 md:min-w-4xl">
+          <h1 className="text-6xl md:text-8xl mb-4">Recipe Generator</h1>
+          <p className=" text-lg md:text-2xl mb-8">
+            Get recipes based on your ingredients.
           </p>
+
+          {!showInput ? (
+            <button
+              onClick={() => setShowInput(true)}
+              className="py-0.5 border-b hover:border-white border-transparent duration-300 transition-border text-xl md:text-3xl"
+            >
+              Get your recipies &rarr;
+            </button>
+          ) : (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 mt-4">
+              <input
+                type="text"
+                placeholder="Enter your ingredients, or what you want to make..."
+                onChange={(e) => setPrompt(e.target.value)}
+                className="py-0.5 border-b duration-300 focus:outline-none transition-border text-xl w-full"
+              />
+              <button
+                onClick={handleGenerate}
+                className="py-0.5 ml-2 border-b hover:border-white border-transparent duration-300 transition-border text-xl"
+              >
+                Generate
+              </button>
+            </div>
+          )}
+        </main>
+      </div>
+
+      {loading && (
+        <div className="flex gap-2 items-center justify-center px-4 text-center mt-10">
+          <h1 className="text-2xl md:text-3xl font-bold text-white">
+            Generating...
+          </h1>
+          <Loader2 className="animate-spin" size={40} />
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      )}
+
+      {reply && (
+        <div className="flex flex-col items-center justify-center px-4 mt-10">
+          <main className="p-5 md:p-20 rounded-2xl shadow-[8px_8px_15px_#171717,-8px_-8px_15px_#2a2a2a] mx-4 mb-10 md:min-w-4xl text-xl ">
+            <ReactMarkdown
+              components={{
+                h1: ({ node, ...props }) => (
+                  <h1 className="text-3xl font-bold my-4" {...props} />
+                ),
+                h2: ({ node, ...props }) => (
+                  <h2 className="text-2xl font-semibold my-3" {...props} />
+                ),
+                h3: ({ node, ...props }) => (
+                  <h3 className="text-xl font-semibold my-2" {...props} />
+                ),
+                p: ({ node, ...props }) => (
+                  <p className="text-lg my-1" {...props} />
+                ),
+                ul: ({ node, ...props }) => (
+                  <ul className="ml-5 list-disc text-lg mb-3" {...props} />
+                ),
+                ol: ({ node, ...props }) => (
+                  <ol className="ml-5 list-decimal text-lg mb-3" {...props} />
+                ),
+                li: ({ node, ...props }) => <li className="mb-1" {...props} />,
+                em: ({ node, ...props }) => (
+                  <em className="italic" {...props} />
+                ),
+                strong: ({ node, ...props }) => (
+                  <strong className="font-semibold" {...props} />
+                ),
+              }}
+            >
+              {reply}
+            </ReactMarkdown>
+          </main>
         </div>
-      </main>
-    </div>
+      )}
+    </>
   );
 }
