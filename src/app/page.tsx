@@ -26,6 +26,7 @@ export default function Home() {
         prompt,
       });
       setReply(res.data.reply || "No recipe generated.");
+      setError("");
     } catch (err: any) {
       console.error(err);
       setReply("Error generating recipe.");
@@ -55,7 +56,10 @@ export default function Home() {
               <input
                 type="text"
                 placeholder="Enter your ingredients, or what you want to make..."
-                onChange={(e) => setPrompt(e.target.value)}
+                onChange={(e) => {
+                  setPrompt(e.target.value);
+                  setError("");
+                }}
                 className="py-0.5 border-b duration-300 focus:outline-none transition-border text-xl w-full"
               />
               <button
