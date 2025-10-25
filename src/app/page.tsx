@@ -9,8 +9,14 @@ export default function Home() {
   const [reply, setReply] = useState("");
   const [loading, setLoading] = useState(false);
   const [prompt, setPrompt] = useState("");
+  const [error, setError] = useState("");
 
   const handleGenerate = async () => {
+    if (!prompt) {
+      setError("Field must not be empty.");
+      return;
+    }
+
     if (!prompt.trim()) return;
     setLoading(true);
     setReply("");
@@ -60,6 +66,8 @@ export default function Home() {
               </button>
             </div>
           )}
+
+          {error && <p className="text-red-500 mt-4">{error}</p>}
         </main>
       </div>
 
