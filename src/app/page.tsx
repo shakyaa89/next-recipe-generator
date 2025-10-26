@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import axios from "axios";
-import { Loader2 } from "lucide-react";
+import { Loader2, OctagonAlert } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
 export default function Home() {
@@ -37,6 +37,24 @@ export default function Home() {
 
   return (
     <>
+      {error && (
+        <div className="fixed inset-0 flex items-center justify-center backdrop-blur-lg">
+          <div className="bg-[#202020] text-white p-10 rounded-lg shadow-lg max-w-lg text-center">
+            <OctagonAlert
+              size={50}
+              className="flex mx-auto mb-4 text-red-500"
+            />
+            <p>{error}</p>
+            <button
+              onClick={() => setError("")}
+              className="mt-4 px-4 py-2 bg-red-600 text-white rounded"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col items-center justify-baseline px-4 text-center mt-10">
         <main className="p-20 rounded-2xl mx-4 md:min-w-4xl">
           <h1 className="text-6xl md:text-8xl mb-4">Recipe Generator</h1>
@@ -70,8 +88,6 @@ export default function Home() {
               </button>
             </div>
           )}
-
-          {error && <p className="text-red-500 mt-4">{error}</p>}
         </main>
       </div>
 

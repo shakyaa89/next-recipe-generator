@@ -9,14 +9,7 @@ interface Props {
 
 const RecipeCard: React.FC<Props> = ({ recipe }) => {
   return (
-    <div
-      style={{
-        border: "1px solid #ccc",
-        borderRadius: "8px",
-        padding: "16px",
-        width: "350px",
-      }}
-    >
+    <div className="rounded-md p-4 w-[350px] shadow-[8px_8px_15px_#171717,-8px_-8px_15px_#2a2a2a]">
       <ReactMarkdown
         components={{
           h1: ({ node, ...props }) => (
